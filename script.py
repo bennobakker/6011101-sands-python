@@ -1,45 +1,27 @@
-"""
-Run script: generates signals, applies transforms, plots and saves PNGs.
-"""
-import os
-import matplotlib.pyplot as plt
-from signals import generate_sine, generate_step, time_shift, time_scale, normalize
+from dataclasses import dataclass
+import numpy as np
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+@dataclass
+class Signal:
+    t: np.ndarray
+    x: np.ndarray
 
-def plot_compare(t1, x1, label1, t2, x2, label2, title, outfile):
-    plt.figure()
-    plt.plot(t1, x1, label=label1)
-    plt.plot(t2, x2, label=label2, linestyle="--")
-    plt.xlabel("Time [s]")
-    plt.ylabel("Amplitude")
-    plt.title(title)
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(outfile, dpi=200)
-    plt.close()
+def _time_vector(duration: float, fs: float) -> np.ndarray:
+    n = int(np.ceil(duration * fs))
+    return np.arange(n) / fs
 
-def main():
-    # Sine example
-    s = generate_sine(freq=5, duration=1.0, fs=1000)
-    s_mod = time_scale(time_shift(s, dt=0.05), a=1.5)
-    s, s_mod = normalize(s), normalize(s_mod)
-    plot_compare(s.t, s.x, "sine original",
-                 s_mod.t, s_mod.x, "shifted + scaled",
-                 "Sine: original vs modified",
-                 os.path.join(OUTPUT_DIR, "sine_vs_shifted_scaled.png"))
+def generate_sine(freq=5.0, amp=1.0, phase=0.0, duration=1.0, fs=1000.0) -> Signal:
+    t = _time_vector(duration, fs)
+    x = amp * np.sin(2 * np.pi * freq * t + phase)
+    return Signal(t, x)
 
-    # Step example
-    u = generate_step(t0=0.2, duration=1.0, fs=1000)
-    u_mod = time_scale(time_shift(u, dt=-0.1), a=0.7)
-    plot_compare(u.t, u.x, "step original",
-                 u_mod.t, u_mod.x, "shifted + compressed",
-                 "Step: original vs modified",
-                 os.path.join(OUTPUT_DIR, "step_vs_modified.png"))
+def generate_step(t0=0.2, amp=1.0, duration=1.0, fs=1000.0) -> Signal:
+    t = _time_vector(duration, fs)
+    x = amp * (t >= t0).astype(float)
+    return Signal(t, x)
 
-    print("Saved plots to:", OUTPUT_DIR)
+def time_shift(sig: Signal, dt: float) -> Signal:
+    return Signal(sig.t + dt, sig.x.copy())
 
-if __name__ == "__main__":
-    main()
+def time_scale(sig: Signal, a: float) -> Signal:
+    return Signal(sig.t * a, sig.x.copy())
