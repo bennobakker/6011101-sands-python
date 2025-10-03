@@ -1,27 +1,28 @@
-from dataclasses import dataclass
-import numpy as np
+import matplotlib.pyplot as plt
+from signals import generate_sine, generate_step, time_shift, time_scale
 
-@dataclass
-class Signal:
-    t: np.ndarray
-    x: np.ndarray
+def main():
+    t1, sine = generate_sine(freq=5, duration=1)
+    t2, step = generate_step(duration=1)
 
-def _time_vector(duration: float, fs: float) -> np.ndarray:
-    n = int(np.ceil(duration * fs))
-    return np.arange(n) / fs
+    t1_shift, sine_shifted = time_shift(t1, sine, shift=0.2)
+    t2_scaled, step_scaled = time_scale(t2, step, scale=0.5)
 
-def generate_sine(freq=5.0, amp=1.0, phase=0.0, duration=1.0, fs=1000.0) -> Signal:
-    t = _time_vector(duration, fs)
-    x = amp * np.sin(2 * np.pi * freq * t + phase)
-    return Signal(t, x)
+    fig, axs = plt.subplots(2, 1, figsize=(8, 6))
 
-def generate_step(t0=0.2, amp=1.0, duration=1.0, fs=1000.0) -> Signal:
-    t = _time_vector(duration, fs)
-    x = amp * (t >= t0).astype(float)
-    return Signal(t, x)
+    axs[0].plot(t1, sine, label="Original Sine")
+    axs[0].plot(t1_shift, sine_shifted, label="Shifted Sine")
+    axs[0].legend()
+    axs[0].set_title("Sine Signal")
 
-def time_shift(sig: Signal, dt: float) -> Signal:
-    return Signal(sig.t + dt, sig.x.copy())
+    axs[1].plot(t2, step, label="Original Step")
+    axs[1].plot(t2_scaled, step_scaled, label="Scaled Step")
+    axs[1].legend()
+    axs[1].set_title("Step Signal")
 
-def time_scale(sig: Signal, a: float) -> Signal:
-    return Signal(sig.t * a, sig.x.copy())
+    plt.tight_layout()
+    plt.savefig("signals_plot.png")
+    plt.show()
+
+if __name__ == "__main__":
+    main()
