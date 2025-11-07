@@ -1,27 +1,42 @@
 import matplotlib.pyplot as plt
-from signals import generate_sine, generate_step, time_shift, time_scale
+from pathlib import Path
+
+from signals import (
+    generate_sine,
+    generate_step,
+    time_shift,
+    time_scale,
+)
 
 def main():
-    t1, sine = generate_sine(freq=5, duration=1)
-    t2, step = generate_step(duration=1)
+    t1, sine = generate_sine(freq=5, duration=1, amplitude=1.0, phase=0.0)
+    t2, step = generate_step(duration=1, t0=0.5, high=1.0, low=0.0)
 
-    t1_shift, sine_shifted = time_shift(t1, sine, shift=0.2)
-    t2_scaled, step_scaled = time_scale(t2, step, scale=0.5)
+    t1_shift, sine_shifted = time_shift(t1, sine, shift=0.2, keep_grid=True)
+    t2_scaled, step_scaled = time_scale(t2, step, scale=0.5, keep_grid=True)
 
-    fig, axs = plt.subplots(2, 1, figsize=(8, 6))
+    fig, axs = plt.subplots(2, 1, figsize=(9, 6), sharex=False)
 
-    axs[0].plot(t1, sine, label="Original Sine")
-    axs[0].plot(t1_shift, sine_shifted, label="Shifted Sine")
+    axs[0].plot(t1, sine, label="Original sine")
+    axs[0].plot(t1_shift, sine_shifted, label="Shifted sine (+0.2 s)")
+    axs[0].set_title("Sine signal")
+    axs[0].set_ylabel("Amplitude")
+    axs[0].grid(True, ls=":")
     axs[0].legend()
-    axs[0].set_title("Sine Signal")
 
-    axs[1].plot(t2, step, label="Original Step")
-    axs[1].plot(t2_scaled, step_scaled, label="Scaled Step")
+    axs[1].plot(t2, step, label="Original step")
+    axs[1].plot(t2_scaled, step_scaled, label="Scaled step (a=0.5)")
+    axs[1].set_title("Step signal")
+    axs[1].set_xlabel("t [s]")
+    axs[1].set_ylabel("Amplitude")
+    axs[1].grid(True, ls=":")
     axs[1].legend()
-    axs[1].set_title("Step Signal")
 
     plt.tight_layout()
-    plt.savefig("signals_plot.png")
+
+    out = Path("figures")
+    out.mkdir(exist_ok=True)
+    fig.savefig(out / "signals_plot.png", dpi=200)
     plt.show()
 
 if __name__ == "__main__":
