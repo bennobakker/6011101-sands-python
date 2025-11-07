@@ -5,8 +5,8 @@ import numpy as np
 def generate_sine(freq: float = 1.0, duration: float = 1.0, sample_rate: int = 1000,
                   amplitude: float = 1.0, phase: float = 0.0):
     """
-    x(t) = A * sin(2π f t + φ)
-    Returns (t, x) with uniform grid on [0, duration).
+    Create a sinusoid: x(t) = A * sin(2π f t + φ)
+    Returns (t, x) with uniform grid.
     """
     n = int(sample_rate * duration)
     t = np.linspace(0.0, duration, n, endpoint=False)
@@ -17,8 +17,7 @@ def generate_sine(freq: float = 1.0, duration: float = 1.0, sample_rate: int = 1
 def generate_step(duration: float = 1.0, sample_rate: int = 1000,
                   t0: float | None = None, high: float = 1.0, low: float = 0.0):
     """
-    Unit step with optional levels:
-        x(t) = low for t < t0, high for t >= t0
+    Unit step with optional levels
     If t0 is None, defaults to duration/2.
     Returns (t, x).
     """
@@ -44,7 +43,7 @@ def generate_square(freq: float = 1.0, duration: float = 1.0, sample_rate: int =
 
 def generate_triangle(freq: float = 1.0, duration: float = 1.0, sample_rate: int = 1000,
                       amplitude: float = 1.0):
-    """Symmetric triangular wave via folded sawtooth. Returns (t, x)."""
+    """Symmetric triangular wave with sawtooth folding. Returns (t, x)."""
     n = int(sample_rate * duration)
     t = np.linspace(0.0, duration, n, endpoint=False)
     saw = 2.0 * ((freq * t) % 1.0) - 1.0
@@ -58,7 +57,7 @@ def time_shift(t: np.ndarray, x: np.ndarray, shift: float = 0.1,
     """
     Shift in time: y(t) = x(t - shift).
     - keep_grid=True (default): resample y onto the original grid 't' via linear interpolation.
-    - keep_grid=False: old midterm behavior -> return (t + shift, x).
+    - keep_grid=False: Return (t + shift, x).
     Returns (t_out, y).
     """
     if not keep_grid:
@@ -72,8 +71,8 @@ def time_scale(t: np.ndarray, x: np.ndarray, scale: float = 2.0,
                keep_grid: bool = True, fill: float = 0.0):
     """
     Time scaling: y(t) = x(scale * t).
-    - keep_grid=True (default): resample onto original grid (nice overlays).
-    - keep_grid=False: return (t * scale, x) like the midterm.
+    - keep_grid=True: resample onto original grid.
+    - keep_grid=False: return (t * scale, x).
     Returns (t_out, y).
     """
     if not keep_grid:
@@ -98,7 +97,7 @@ def multiply(x: np.ndarray, y: np.ndarray) -> np.ndarray:
 def numeric_fourier(t: np.ndarray, x: np.ndarray, f: np.ndarray) -> np.ndarray:
     """
     Numeric Fourier transform (rectangle rule on a uniform grid):
-        X(f) ≈ ∫ x(t) e^{-j2π f t} dt
+    X(f) = ∫ x(t) e^{-j2π f t} dt
     """
     dt = float(np.mean(np.diff(t)))
     return np.exp(-1j * 2 * np.pi * np.outer(f, t)) @ x * dt
