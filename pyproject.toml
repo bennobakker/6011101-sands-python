@@ -1,1 +1,12 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "6011101-sands-python"
+version = "0.1.0"
+description = "Generates signals, modifies them, and plots them"
+authors = [
+  { name = "Benno Bakker", email = "btbakker@tudelft.nl" }
+]
+dependencies = ["numpy", "matplotlib"]
