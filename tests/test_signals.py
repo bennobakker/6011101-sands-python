@@ -1,11 +1,9 @@
 import numpy as np
 import signals as sg
 
-def make_time():
-  fs = 1000
-    T = 1
-    return np.arange(0, T, 1/fs)
-
+def _timebase():
+    t, _ = sg.generate_sine(freq=1.0, duration=1.0, sample_rate=1000)
+    return t
 
 def test_sinusoid_properties():
     t = make_time()
