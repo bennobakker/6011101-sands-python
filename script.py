@@ -1,12 +1,6 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
-
-from signals import (
-    generate_sine,
-    generate_step,
-    time_shift,
-    time_scale,
-)
+from signals import generate_sine, generate_step, time_shift, time_scale
 
 def main():
     t1, sine = generate_sine(freq=5, duration=1, amplitude=1.0, phase=0.0)
@@ -15,7 +9,7 @@ def main():
     t1_shift, sine_shifted = time_shift(t1, sine, shift=0.2, keep_grid=True)
     t2_scaled, step_scaled = time_scale(t2, step, scale=0.5, keep_grid=True)
 
-    fig, axs = plt.subplots(2, 1, figsize=(9, 6), sharex=False)
+    fig, axs = plt.subplots(2, 1, figsize=(9, 6))
 
     axs[0].plot(t1, sine, label="Original sine")
     axs[0].plot(t1_shift, sine_shifted, label="Shifted sine (+0.2 s)")
@@ -33,10 +27,8 @@ def main():
     axs[1].legend()
 
     plt.tight_layout()
-
-    out = Path("figures")
-    out.mkdir(exist_ok=True)
-    fig.savefig(out / "signals_plot.png", dpi=200)
+    Path("figures").mkdir(exist_ok=True)
+    fig.savefig("figures/signals_plot.png", dpi=200)
     plt.show()
 
 if __name__ == "__main__":
