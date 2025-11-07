@@ -29,29 +29,6 @@ def generate_step(duration: float = 1.0, sample_rate: int = 1000,
     return t, x
 
 
-
-def generate_square(freq: float = 1.0, duration: float = 1.0, sample_rate: int = 1000,
-                    amplitude: float = 1.0, duty: float = 0.5):
-    """Square wave with duty-cycle in (0,1). Returns (t, x)."""
-    n = int(sample_rate * duration)
-    t = np.linspace(0.0, duration, n, endpoint=False)
-    duty = float(np.clip(duty, 1e-6, 1 - 1e-6))
-    phase = (freq * t) % 1.0
-    x = amplitude * np.where(phase < duty, 1.0, -1.0)
-    return t, x
-
-
-def generate_triangle(freq: float = 1.0, duration: float = 1.0, sample_rate: int = 1000,
-                      amplitude: float = 1.0):
-    """Symmetric triangular wave with sawtooth folding. Returns (t, x)."""
-    n = int(sample_rate * duration)
-    t = np.linspace(0.0, duration, n, endpoint=False)
-    saw = 2.0 * ((freq * t) % 1.0) - 1.0
-    x = amplitude * (2.0 * np.abs(saw) - 1.0)
-    return t, x
-
-
-
 def time_shift(t: np.ndarray, x: np.ndarray, shift: float = 0.1,
                keep_grid: bool = True, fill: float = 0.0):
     """
